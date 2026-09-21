@@ -1,0 +1,14 @@
+{
+    "name": "ExtensionTest",
+    "description": "Describe what your extension does",
+    "module_path": "${extensionJsonFolder}/ExtensionTest.dll",
+    "extensions": [
+        {
+            "utility": {
+                "name": "ExtensionTest",
+                "caption": "ExtensionTest",
+                "id": "Extension.Utility.ExtensionTest"
+            }
+        }
+    ]
+}
