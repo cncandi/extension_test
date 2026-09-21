@@ -1,0 +1,18 @@
+<Project>
+  <!-- Applied by MSBuild to every project under this repository, so an extension project dropped
+       into src/ from elsewhere builds the way the publish workflow expects without a single edit to
+       its csproj (17.09.2026). What the workflow expects: a FLAT Release output — bin/Release with
+       the dll, <Name>.settings.json and package.info.json at the top — because the publish action
+       uploads only the top level of that folder. -->
+  <PropertyGroup>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+    <OutDir>bin\$(Configuration)\</OutDir>
+  </PropertyGroup>
+
+  <!-- Keep the Release output clean: it is packed into the store package as-is. -->
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <DebugType>none</DebugType>
+    <DebugSymbols>false</DebugSymbols>
+  </PropertyGroup>
+</Project>

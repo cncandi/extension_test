@@ -1,0 +1,18 @@
+<Project>
+  <!-- The target the publish workflow builds with: `dotnet build src -c Release -t:PackReady`.
+       It lives here rather than in the csproj so that any project under this repository has it,
+       including one an author brought from elsewhere (17.09.2026).
+
+       The SDK's transitive packages copy ~60 doc xmls into the output via their own
+       AfterTargets="Build" hooks, which run after any hook a project declares. PackReady therefore
+       DEPENDS on Build: its body executes only after Build and all its hooks are done, and leaves
+       an output folder that is clean to pack into the store package as-is. -->
+  <Target Name="PackReady" DependsOnTargets="Build">
+    <ItemGroup>
+      <_SdkJunk Include="$(OutDir)*.xml" Exclude="$(OutDir)$(AssemblyName).xml" />
+      <_SdkJunk Include="$(OutDir)*.stbuildresult.json" />
+    </ItemGroup>
+    <Delete Files="@(_SdkJunk)" />
+    <Message Importance="high" Text="PackReady: output cleaned for packing -> $(OutDir)" />
+  </Target>
+</Project>

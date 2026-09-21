@@ -1,0 +1,39 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- The flat Release output and the PackReady target the publish workflow relies on are not in
+       here: they come from Directory.Build.props / Directory.Build.targets at the repository root,
+       which MSBuild applies to any project under it - so a project brought from elsewhere works too. -->
+  <PropertyGroup>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- ENCY 3. The version is EXACT (square brackets), not "at least", and must not be raised
+         casually. The SDK fixes the versions of the CAMAPI assemblies it binds to, and .NET never
+         loads one older than requested: an extension built against an SDK newer than the CEILING
+         does not load at all, and the manager only says "Could not create instance of
+         CAMAPI.ExtensionFactory", which names nothing.
+         The ceiling is not the newest SDK but what the extensions tab carries — registration runs
+         inside that tab's process. 3.0.8 was measured against the tab shipped in ENCY 3.1.1 on
+         14.09.2026 and registers; 3.0.12 does not, its CAMAPI.Application 3.0.6.0 is newer than the
+         tab's 3.0.5.0. Raise this to whatever GET /api/sdk answers in registrableSdk, never above.
+         The framework follows the application: ENCY 3 runs on .NET 10, and an extension is a library
+         loaded into that process. Both trades are one-way — an older SDK and an older framework load
+         in a newer ENCY, never the reverse. -->
+    <PackageReference Include="EncySoftware.CAMAPI.Sdk.Net" Version="[3.0.8]" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="EncyExtension.settings.json" CopyToOutputDirectory="Always" />
+    <None Update="package.info.json" CopyToOutputDirectory="Always" />
+    <None Update="readme.md" CopyToOutputDirectory="Always" />
+    <!-- Pictures of the extension: the store turns them into the card's screenshots and takes the
+         first one as its cover. Two details matter. Only image extensions are copied, so the note in
+         that folder does not end up in the package (and cannot shadow readme.md). And Link flattens
+         them into the output root, because CI uploads only the top level of the build output. -->
+    <None Include="screenshots\*.png;screenshots\*.jpg;screenshots\*.jpeg;screenshots\*.gif;screenshots\*.webp"
+          CopyToOutputDirectory="Always" Link="%(Filename)%(Extension)" />
+  </ItemGroup>
+
+</Project>
